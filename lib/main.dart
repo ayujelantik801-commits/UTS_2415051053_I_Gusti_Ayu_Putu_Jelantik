@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'screens/home_screen.dart';
+import 'screens/app_shell.dart';
 
 void main() => runApp(const BakeCraftApp());
 
@@ -15,7 +15,7 @@ class BakeCraftApp extends StatelessWidget {
         useMaterial3: true,
         colorScheme: ColorScheme.fromSeed(seedColor: const Color(0xFFC77D3A)),
       ),
-      home: const HomeScreen(),
+      home: const AppShell(),
     );
   }
 }
