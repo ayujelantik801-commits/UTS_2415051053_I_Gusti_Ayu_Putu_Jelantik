@@ -12,14 +12,42 @@ class RecipeDetailScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(title: Text(recipe.name)),
-      body: ListView(
-        children: [
-          RecipeImage(url: recipe.thumbnail, height: 240),
-          Padding(
-            padding: const EdgeInsets.all(16),
-            child: _RecipeInfo(recipe: recipe),
-          ),
-        ],
+      body: LayoutBuilder(
+        builder: (context, constraints) {
+          if (constraints.maxWidth >= 720) {
+            return Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Expanded(
+                  flex: 2,
+                  child: Padding(
+                    padding: const EdgeInsets.all(16),
+                    child: ClipRRect(
+                      borderRadius: BorderRadius.circular(16),
+                      child: RecipeImage(url: recipe.thumbnail, height: 400),
+                    ),
+                  ),
+                ),
+                Expanded(
+                  flex: 3,
+                  child: SingleChildScrollView(
+                    padding: const EdgeInsets.all(16),
+                    child: _RecipeInfo(recipe: recipe),
+                  ),
+                ),
+              ],
+            );
+          }
+          return ListView(
+            children: [
+              RecipeImage(url: recipe.thumbnail, height: 240),
+              Padding(
+                padding: const EdgeInsets.all(16),
+                child: _RecipeInfo(recipe: recipe),
+              ),
+            ],
+          );
+        },
       ),
     );
   }

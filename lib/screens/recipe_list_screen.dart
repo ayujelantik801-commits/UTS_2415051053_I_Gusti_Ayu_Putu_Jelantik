@@ -10,25 +10,31 @@ class RecipeListScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(title: const Text('Resep Baking')),
-      body: GridView.builder(
-        padding: const EdgeInsets.all(16),
-        gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-          crossAxisCount: 2,
-          crossAxisSpacing: 12,
-          mainAxisSpacing: 12,
-          childAspectRatio: 0.8,
-        ),
-        itemCount: sampleRecipes.length,
-        itemBuilder: (context, index) {
-          final recipe = sampleRecipes[index];
-          return RecipeCard(
-            recipe: recipe,
-            onTap: () => Navigator.push(
-              context,
-              MaterialPageRoute(
-                builder: (_) => RecipeDetailScreen(recipe: recipe),
-              ),
+        body: LayoutBuilder(
+        builder: (context, constraints) {
+          final width = constraints.maxWidth;
+          final columns = width >= 900 ? 4 : (width >= 600 ? 3 : 2);
+          return GridView.builder(
+            padding: const EdgeInsets.all(16),
+            gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+              crossAxisCount: columns,
+              crossAxisSpacing: 12,
+              mainAxisSpacing: 12,
+              childAspectRatio: 0.8,
             ),
+            itemCount: sampleRecipes.length,
+            itemBuilder: (context, index) {
+              final recipe = sampleRecipes[index];
+              return RecipeCard(
+                recipe: recipe,
+                onTap: () => Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (_) => RecipeDetailScreen(recipe: recipe),
+                  ),
+                ),
+              );
+            },
           );
         },
       ),
