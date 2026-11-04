@@ -4,6 +4,8 @@ import '../widgets/recipe_image.dart';
 import '../widgets/section_title.dart';
 import 'package:provider/provider.dart';
 import '../providers/translation_provider.dart';
+import '../providers/saved_bake_provider.dart';
+import 'add_bake_screen.dart';
 
 class RecipeDetailScreen extends StatelessWidget {
   final Recipe recipe;
@@ -85,6 +87,7 @@ class _RecipeInfoState extends State<_RecipeInfo> {
     final content = translation.contentFor(recipe.id);
     final loading = translation.isLoading(recipe.id);
     final error = translation.errorFor(recipe.id);
+    final isSaved = context.watch<SavedBakeProvider>().isSaved(recipe.id);
 
     final shown = _showOriginal ? null : content;
     final ingredients = shown?.ingredients ?? recipe.ingredients;
@@ -151,9 +154,16 @@ class _RecipeInfoState extends State<_RecipeInfo> {
         Text(instructions.isEmpty ? 'Belum ada instruksi.' : instructions),
         const SizedBox(height: 24),
         FilledButton.icon(
-          onPressed: () {}, // akan dihubungkan ke database nanti
-          icon: const Icon(Icons.bookmark_add_outlined),
-          label: const Text('Simpan ke Koleksi'),
+          onPressed: isSaved
+              ? null
+              : () => Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (_) => AddBakeScreen(recipe: recipe),
+                    ),
+                  ),
+          icon: Icon(isSaved ? Icons.bookmark_added : Icons.bookmark_add_outlined),
+          label: Text(isSaved ? 'Sudah ada di Koleksi' : 'Simpan ke Koleksi'),
         ),
       ],
     );

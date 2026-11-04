@@ -7,4 +7,5 @@ class SavedBakeRepository {
   SavedBakeRepository(this._service);
 
   Future<List<SavedBake>> getAll() => _service.fetchAll();
+  Future<SavedBake> add(SavedBake bake) => _service.insert(bake);
 }

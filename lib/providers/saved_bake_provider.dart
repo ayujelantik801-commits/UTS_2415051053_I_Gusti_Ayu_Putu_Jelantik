@@ -12,9 +12,14 @@ class SavedBakeProvider extends ChangeNotifier {
   List<SavedBake> _items = [];
   String? _errorMessage;
 
+  bool _isSaving = false;
+  String? _actionError;
+
   LoadStatus get status => _status;
   List<SavedBake> get items => _items;
   String? get errorMessage => _errorMessage;
+  bool get isSaving => _isSaving;
+  String? get actionError => _actionError;
 
   /// Shared state: dipakai layar detail untuk tahu resep sudah disimpan atau belum.
   bool isSaved(String mealId) => _items.any((e) => e.mealId == mealId);
@@ -32,5 +37,25 @@ class SavedBakeProvider extends ChangeNotifier {
       _errorMessage = e.toString().replaceFirst('Exception: ', '');
     }
     notifyListeners();
+  }
+
+  /// Mengembalikan true jika berhasil. Pesan gagal ada di [actionError].
+  Future<bool> add(SavedBake bake) async {
+    _isSaving = true;
+    _actionError = null;
+    notifyListeners();
+
+    try {
+      final created = await _repository.add(bake);
+      _items = [created, ..._items];
+      _isSaving = false;
+      notifyListeners();
+      return true;
+    } catch (e) {
+      _actionError = e.toString();
+      _isSaving = false;
+      notifyListeners();
+      return false;
+    }
   }
 }

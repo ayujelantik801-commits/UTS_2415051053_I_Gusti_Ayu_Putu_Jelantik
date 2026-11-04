@@ -26,6 +26,15 @@ class SavedBakeService {
     });
   }
 
+    /// CREATE: simpan resep baru, lalu kembalikan baris yang dibuat database.
+  Future<SavedBake> insert(SavedBake bake) {
+    return _guard(() async {
+      final row =
+          await _client.from(_table).insert(bake.toJson()).select().single();
+      return SavedBake.fromJson(row);
+    });
+  }
+
   /// Menerjemahkan berbagai error menjadi pesan yang mudah dipahami.
   Future<T> _guard<T>(Future<T> Function() action) async {
     try {
