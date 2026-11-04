@@ -7,8 +7,16 @@ import 'repositories/translation_repository.dart';
 import 'screens/app_shell.dart';
 import 'services/meal_api_service.dart';
 import 'services/translation_service.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 
-void main() => runApp(const BakeCraftApp());
+Future<void> main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+    await Supabase.initialize(
+    url: const String.fromEnvironment('SUPABASE_URL'),
+    publishableKey: const String.fromEnvironment('SUPABASE_KEY'),
+  );
+  runApp(const BakeCraftApp());
+}
 
 class BakeCraftApp extends StatelessWidget {
   const BakeCraftApp({super.key});
