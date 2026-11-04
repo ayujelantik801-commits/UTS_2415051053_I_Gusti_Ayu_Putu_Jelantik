@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import '../models/recipe.dart';
 import '../widgets/recipe_image.dart';
 import '../widgets/section_title.dart';
+import 'package:provider/provider.dart';
+import '../providers/translation_provider.dart';
 
 class RecipeDetailScreen extends StatelessWidget {
   final Recipe recipe;
@@ -53,13 +55,41 @@ class RecipeDetailScreen extends StatelessWidget {
   }
 }
 
-class _RecipeInfo extends StatelessWidget {
+class _RecipeInfo extends StatefulWidget {
   final Recipe recipe;
 
   const _RecipeInfo({required this.recipe});
 
   @override
+  State<_RecipeInfo> createState() => _RecipeInfoState();
+}
+
+class _RecipeInfoState extends State<_RecipeInfo> {
+  bool _showOriginal = false;
+
+  @override
+  void initState() {
+    super.initState();
+    // Mulai terjemahan otomatis saat halaman dibuka.
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (mounted) {
+        context.read<TranslationProvider>().translate(widget.recipe);
+      }
+    });
+  }
+
+  @override
   Widget build(BuildContext context) {
+    final recipe = widget.recipe;
+    final translation = context.watch<TranslationProvider>();
+    final content = translation.contentFor(recipe.id);
+    final loading = translation.isLoading(recipe.id);
+    final error = translation.errorFor(recipe.id);
+
+    final shown = _showOriginal ? null : content;
+    final ingredients = shown?.ingredients ?? recipe.ingredients;
+    final instructions = shown?.instructions ?? recipe.instructions ?? '';
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -73,22 +103,57 @@ class _RecipeInfo extends StatelessWidget {
           ],
         ),
         const SizedBox(height: 16),
+        if (loading)
+          const Row(
+            children: [
+              SizedBox(
+                width: 16,
+                height: 16,
+                child: CircularProgressIndicator(strokeWidth: 2),
+              ),
+              SizedBox(width: 8),
+              Text('Menerjemahkan ke Bahasa Indonesia...'),
+            ],
+          )
+        else if (error != null)
+          Row(
+            children: [
+              Expanded(child: Text('$error Menampilkan teks asli.')),
+              TextButton(
+                onPressed: () => context
+                    .read<TranslationProvider>()
+                    .translate(recipe),
+                child: const Text('Coba lagi'),
+              ),
+            ],
+          )
+        else if (content != null)
+          SegmentedButton<bool>(
+            segments: const [
+              ButtonSegment(value: false, label: Text('Indonesia')),
+              ButtonSegment(value: true, label: Text('English')),
+            ],
+            selected: {_showOriginal},
+            onSelectionChanged: (s) =>
+                setState(() => _showOriginal = s.first),
+          ),
+        const SizedBox(height: 16),
         const SectionTitle('Bahan'),
         const SizedBox(height: 8),
-        for (final item in recipe.ingredients)
+        for (final item in ingredients)
           Padding(
             padding: const EdgeInsets.symmetric(vertical: 2),
             child: Text('• $item'),
           ),
         const SizedBox(height: 16),
-        const SectionTitle('Langkah'),
+        const SectionTitle('Cara Pembuatan'),
         const SizedBox(height: 8),
-        Text(recipe.instructions ?? 'Belum ada instruksi.'),
+        Text(instructions.isEmpty ? 'Belum ada instruksi.' : instructions),
         const SizedBox(height: 24),
         FilledButton.icon(
           onPressed: () {}, // akan dihubungkan ke database nanti
           icon: const Icon(Icons.bookmark_add_outlined),
-          label: const Text('Simpan ke My Bakes'),
+          label: const Text('Simpan ke Koleksi'),
         ),
       ],
     );

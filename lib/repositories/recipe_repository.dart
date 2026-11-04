@@ -1,13 +1,27 @@
 import '../models/recipe.dart';
-import '../services/sample_data.dart';
+import '../services/meal_api_service.dart';
 
 class RecipeRepository {
+  final MealApiService _service;
+
+  RecipeRepository(this._service);
+
+  static const _defaultKeywords = [
+    'cake', 'cookie', 'brownie', 'tart', 'bread', 'pie',
+  ];
+
   Future<List<Recipe>> searchRecipes(String keyword) async {
-    await Future.delayed(const Duration(milliseconds: 600)); // simulasi loading
-    final k = keyword.trim().toLowerCase();
-    if (k.isEmpty) return sampleRecipes;
-    return sampleRecipes
-        .where((r) => r.name.toLowerCase().contains(k))
-        .toList();
+    final k = keyword.trim();
+    if (k.isNotEmpty) return _service.searchMeals(k);
+
+    // Katalog awal: gabungkan beberapa kata kunci baking, hapus duplikat.
+    final results = await Future.wait(_defaultKeywords.map(_service.searchMeals));
+    final unique = <String, Recipe>{};
+    for (final list in results) {
+      for (final recipe in list) {
+        unique[recipe.id] = recipe;
+      }
+    }
+    return unique.values.toList();
   }
 }
