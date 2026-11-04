@@ -58,4 +58,26 @@ class SavedBakeProvider extends ChangeNotifier {
       return false;
     }
   }
+
+    /// Mengembalikan true jika berhasil. Pesan gagal ada di [actionError].
+  Future<bool> update(SavedBake bake) async {
+    _isSaving = true;
+    _actionError = null;
+    notifyListeners();
+
+    try {
+      final updated = await _repository.edit(bake);
+      _items = [
+        for (final item in _items) item.id == updated.id ? updated : item,
+      ];
+      _isSaving = false;
+      notifyListeners();
+      return true;
+    } catch (e) {
+      _actionError = e.toString();
+      _isSaving = false;
+      notifyListeners();
+      return false;
+    }
+  }
 }

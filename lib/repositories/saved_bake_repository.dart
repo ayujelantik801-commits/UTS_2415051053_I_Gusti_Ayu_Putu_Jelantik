@@ -8,4 +8,5 @@ class SavedBakeRepository {
 
   Future<List<SavedBake>> getAll() => _service.fetchAll();
   Future<SavedBake> add(SavedBake bake) => _service.insert(bake);
+  Future<SavedBake> edit(SavedBake bake) => _service.update(bake);
 }

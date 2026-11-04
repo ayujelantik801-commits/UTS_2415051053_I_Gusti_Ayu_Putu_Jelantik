@@ -26,11 +26,28 @@ class SavedBakeService {
     });
   }
 
-    /// CREATE: simpan resep baru, lalu kembalikan baris yang dibuat database.
+  /// CREATE: simpan resep baru, lalu kembalikan baris yang dibuat database.
   Future<SavedBake> insert(SavedBake bake) {
     return _guard(() async {
       final row =
           await _client.from(_table).insert(bake.toJson()).select().single();
+      return SavedBake.fromJson(row);
+    });
+  }
+
+  /// UPDATE: ubah catatan, rating, dan status berdasarkan id.
+  Future<SavedBake> update(SavedBake bake) {
+    return _guard(() async {
+      final row = await _client
+          .from(_table)
+          .update({
+            'note': bake.note,
+            'rating': bake.rating,
+            'bake_status': bake.bakeStatus,
+          })
+          .eq('id', bake.id!)
+          .select()
+          .single();
       return SavedBake.fromJson(row);
     });
   }

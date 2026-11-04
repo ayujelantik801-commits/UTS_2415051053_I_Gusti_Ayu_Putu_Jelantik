@@ -4,6 +4,7 @@ import '../providers/recipe_provider.dart' show LoadStatus;
 import '../providers/saved_bake_provider.dart';
 import '../widgets/saved_bake_tile.dart';
 import '../widgets/state_message.dart';
+import 'edit_bake_screen.dart';
 
 class MyBakesScreen extends StatelessWidget {
   const MyBakesScreen({super.key});
@@ -49,8 +50,18 @@ class MyBakesScreen extends StatelessWidget {
               mainAxisSpacing: 12,
             ),
             itemCount: provider.items.length,
-            itemBuilder: (context, index) =>
-                SavedBakeTile(bake: provider.items[index]),
+            itemBuilder: (context, index) {
+              final bake = provider.items[index];
+              return SavedBakeTile(
+                bake: bake,
+                onTap: () => Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (_) => EditBakeScreen(bake: bake),
+                  ),
+                ),
+              );
+            },
           ),
         );
     }
