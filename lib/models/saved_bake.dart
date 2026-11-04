@@ -1,5 +1,6 @@
 class SavedBake {
   final int? id;
+  final String studentId;
   final String mealId;
   final String mealName;
   final String thumbnail;
@@ -15,6 +16,7 @@ class SavedBake {
 
   const SavedBake({
     this.id,
+    required this.studentId,
     required this.mealId,
     required this.mealName,
     required this.thumbnail,
@@ -27,6 +29,7 @@ class SavedBake {
   factory SavedBake.fromJson(Map<String, dynamic> json) {
     return SavedBake(
       id: json['id'] as int?,
+      studentId: json['student_id'] as String,
       mealId: json['meal_id'] as String,
       mealName: json['meal_name'] as String,
       thumbnail: json['thumbnail'] as String? ?? '',
@@ -39,7 +42,9 @@ class SavedBake {
     );
   }
 
+  /// Untuk insert/update ke Supabase (id dan created_at diisi oleh database).
   Map<String, dynamic> toJson() => {
+        'student_id': studentId,
         'meal_id': mealId,
         'meal_name': mealName,
         'thumbnail': thumbnail,
@@ -51,6 +56,7 @@ class SavedBake {
   SavedBake copyWith({String? note, int? rating, String? bakeStatus}) {
     return SavedBake(
       id: id,
+      studentId: studentId,
       mealId: mealId,
       mealName: mealName,
       thumbnail: thumbnail,

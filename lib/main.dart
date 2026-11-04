@@ -8,6 +8,9 @@ import 'screens/app_shell.dart';
 import 'services/meal_api_service.dart';
 import 'services/translation_service.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
+import 'providers/saved_bake_provider.dart';
+import 'repositories/saved_bake_repository.dart';
+import 'services/saved_bake_service.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -32,6 +35,11 @@ class BakeCraftApp extends StatelessWidget {
         ChangeNotifierProvider(
           create: (_) =>
               TranslationProvider(TranslationRepository(TranslationService())),
+        ),
+                ChangeNotifierProvider(
+          create: (_) => SavedBakeProvider(
+            SavedBakeRepository(SavedBakeService()),
+          )..load(),
         ),
       ],
       child: MaterialApp(
