@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import '../models/saved_bake.dart';
 import '../providers/recipe_provider.dart' show LoadStatus;
 import '../providers/saved_bake_provider.dart';
 import '../widgets/saved_bake_tile.dart';
@@ -9,16 +10,52 @@ import 'edit_bake_screen.dart';
 class MyBakesScreen extends StatelessWidget {
   const MyBakesScreen({super.key});
 
+  Future<void> _confirmDelete(BuildContext context, SavedBake bake) async {
+    final provider = context.read<SavedBakeProvider>();
+    final messenger = ScaffoldMessenger.of(context);
+
+    final confirmed = await showDialog<bool>(
+      context: context,
+      builder: (dialogContext) => AlertDialog(
+        title: const Text('Hapus dari Koleksi?'),
+        content: Text('"${bake.mealName}" akan dihapus permanen dari koleksimu.'),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(dialogContext, false),
+            child: const Text('Batal'),
+          ),
+          FilledButton(
+            onPressed: () => Navigator.pop(dialogContext, true),
+            child: const Text('Hapus'),
+          ),
+        ],
+      ),
+    );
+
+    if (confirmed != true) return;
+
+    final success = await provider.remove(bake);
+    messenger.showSnackBar(
+      SnackBar(
+        content: Text(
+          success
+              ? 'Resep dihapus dari Koleksi.'
+              : (provider.actionError ?? 'Gagal menghapus resep.'),
+        ),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final provider = context.watch<SavedBakeProvider>();
     return Scaffold(
       appBar: AppBar(title: const Text('Koleksiku')),
-      body: _buildBody(provider),
+      body: _buildBody(context, provider),
     );
   }
 
-  Widget _buildBody(SavedBakeProvider provider) {
+  Widget _buildBody(BuildContext context, SavedBakeProvider provider) {
     switch (provider.status) {
       case LoadStatus.initial:
       case LoadStatus.loading:
@@ -60,6 +97,7 @@ class MyBakesScreen extends StatelessWidget {
                     builder: (_) => EditBakeScreen(bake: bake),
                   ),
                 ),
+                onDelete: () => _confirmDelete(context, bake),
               );
             },
           ),

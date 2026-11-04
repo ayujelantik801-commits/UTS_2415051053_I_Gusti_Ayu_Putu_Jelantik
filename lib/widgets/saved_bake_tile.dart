@@ -5,8 +5,14 @@ import 'recipe_image.dart';
 class SavedBakeTile extends StatelessWidget {
   final SavedBake bake;
   final VoidCallback? onTap;
+  final VoidCallback? onDelete;
 
-  const SavedBakeTile({super.key, required this.bake, this.onTap});
+  const SavedBakeTile({
+    super.key,
+    required this.bake,
+    this.onTap,
+    this.onDelete,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -61,6 +67,12 @@ class SavedBakeTile extends StatelessWidget {
                   ],
                 ),
               ),
+              if (onDelete != null)
+                IconButton(
+                  tooltip: 'Hapus',
+                  icon: const Icon(Icons.delete_outline),
+                  onPressed: onDelete,
+                ),
             ],
           ),
         ),

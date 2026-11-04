@@ -59,7 +59,6 @@ class SavedBakeProvider extends ChangeNotifier {
     }
   }
 
-    /// Mengembalikan true jika berhasil. Pesan gagal ada di [actionError].
   Future<bool> update(SavedBake bake) async {
     _isSaving = true;
     _actionError = null;
@@ -76,6 +75,21 @@ class SavedBakeProvider extends ChangeNotifier {
     } catch (e) {
       _actionError = e.toString();
       _isSaving = false;
+      notifyListeners();
+      return false;
+    }
+  }
+
+  Future<bool> remove(SavedBake bake) async {
+    _actionError = null;
+
+    try {
+      await _repository.remove(bake.id!);
+      _items = _items.where((e) => e.id != bake.id).toList();
+      notifyListeners();
+      return true;
+    } catch (e) {
+      _actionError = e.toString();
       notifyListeners();
       return false;
     }

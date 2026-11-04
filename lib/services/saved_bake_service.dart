@@ -52,6 +52,16 @@ class SavedBakeService {
     });
   }
 
+  /// DELETE: hapus baris berdasarkan id.
+  Future<void> delete(int id) {
+    return _guard(() async {
+      final deleted = await _client.from(_table).delete().eq('id', id).select();
+      if (deleted.isEmpty) {
+        throw const ApiException('Data tidak ditemukan atau sudah dihapus.');
+      }
+    });
+  }
+
   /// Menerjemahkan berbagai error menjadi pesan yang mudah dipahami.
   Future<T> _guard<T>(Future<T> Function() action) async {
     try {
