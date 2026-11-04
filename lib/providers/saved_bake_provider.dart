@@ -15,14 +15,27 @@ class SavedBakeProvider extends ChangeNotifier {
   bool _isSaving = false;
   String? _actionError;
 
+  /// Filter status koleksi. null berarti tampilkan semua.
+  String? _statusFilter;
+
   LoadStatus get status => _status;
   List<SavedBake> get items => _items;
   String? get errorMessage => _errorMessage;
   bool get isSaving => _isSaving;
   String? get actionError => _actionError;
+  String? get statusFilter => _statusFilter;
+
+  List<SavedBake> get filteredItems => _statusFilter == null
+      ? _items
+      : _items.where((e) => e.bakeStatus == _statusFilter).toList();
 
   /// Shared state: dipakai layar detail untuk tahu resep sudah disimpan atau belum.
   bool isSaved(String mealId) => _items.any((e) => e.mealId == mealId);
+
+  void setFilter(String? status) {
+    _statusFilter = status;
+    notifyListeners();
+  }
 
   Future<void> load() async {
     _status = LoadStatus.loading;
