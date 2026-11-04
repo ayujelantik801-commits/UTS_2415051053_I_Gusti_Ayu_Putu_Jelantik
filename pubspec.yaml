@@ -38,6 +38,8 @@ dependencies:
   provider: ^6.1.5+1
   http: ^1.6.0
   supabase_flutter: ^2.15.4
+  flutter_localizations:
+    sdk: flutter
 
 dev_dependencies:
   flutter_test:

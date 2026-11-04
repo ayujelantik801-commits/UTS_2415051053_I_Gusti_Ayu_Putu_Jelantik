@@ -10,10 +10,18 @@ import 'recipe_list_screen.dart';
 class HomeScreen extends StatelessWidget {
   const HomeScreen({super.key});
 
-  static const _categories = ['Cake', 'Pie', 'Cookie', 'Tart', 'Brownie', 'Bread'];
+  // (label tampilan, kata kunci untuk API)
+  static const _categories = [
+    ('Kue', 'cake'),
+    ('Pai', 'pie'),
+    ('Kue Kering', 'cookie'),
+    ('Tart', 'tart'),
+    ('Brownies', 'brownie'),
+    ('Roti', 'bread'),
+  ];
 
-  void _openResults(BuildContext context, String keyword) {
-    context.read<RecipeProvider>().search(keyword);
+  void _openResults(BuildContext context, String keyword, {String? label}) {
+    context.read<RecipeProvider>().search(keyword, label: label);
     Navigator.push(
       context,
       MaterialPageRoute(builder: (_) => const RecipeListScreen()),
@@ -30,7 +38,7 @@ class HomeScreen extends StatelessWidget {
         padding: const EdgeInsets.all(16),
         children: [
           Text(
-            'Craft Your Perfect Bake',
+            'Wujudkan Kue Impianmu',
             style: Theme.of(context).textTheme.headlineSmall,
           ),
           const SizedBox(height: 12),
@@ -40,7 +48,7 @@ class HomeScreen extends StatelessWidget {
               if (value.trim().isNotEmpty) _openResults(context, value);
             },
             decoration: const InputDecoration(
-              hintText: 'Cari resep kue...',
+              hintText: 'Cari resep, mis. cokelat, keju, pisang...',
               prefixIcon: Icon(Icons.search),
               border: OutlineInputBorder(
                 borderRadius: BorderRadius.all(Radius.circular(28)),
@@ -53,8 +61,8 @@ class HomeScreen extends StatelessWidget {
             children: [
               for (final c in _categories)
                 ActionChip(
-                  label: Text(c),
-                  onPressed: () => _openResults(context, c),
+                  label: Text(c.$1),
+                  onPressed: () => _openResults(context, c.$2, label: c.$1),
                 ),
             ],
           ),

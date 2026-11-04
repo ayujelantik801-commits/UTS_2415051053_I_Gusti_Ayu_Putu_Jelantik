@@ -22,10 +22,10 @@ class _AppShellState extends State<AppShell> {
   ];
 
   static const _items = [
-    (Icons.home_outlined, Icons.home, 'Home'),
+    (Icons.home_outlined, Icons.home, 'Beranda'),
     (Icons.menu_book_outlined, Icons.menu_book, 'Resep'),
-    (Icons.bookmark_border, Icons.bookmark, 'My Bakes'),
-    (Icons.person_outline, Icons.person, 'Profile'),
+    (Icons.bookmark_border, Icons.bookmark, 'Koleksiku'),
+    (Icons.person_outline, Icons.person, 'Profil'),
   ];
 
   @override

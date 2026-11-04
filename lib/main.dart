@@ -1,20 +1,21 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:provider/provider.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 import 'providers/recipe_provider.dart';
+import 'providers/saved_bake_provider.dart';
 import 'providers/translation_provider.dart';
 import 'repositories/recipe_repository.dart';
+import 'repositories/saved_bake_repository.dart';
 import 'repositories/translation_repository.dart';
 import 'screens/app_shell.dart';
 import 'services/meal_api_service.dart';
-import 'services/translation_service.dart';
-import 'package:supabase_flutter/supabase_flutter.dart';
-import 'providers/saved_bake_provider.dart';
-import 'repositories/saved_bake_repository.dart';
 import 'services/saved_bake_service.dart';
+import 'services/translation_service.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
-    await Supabase.initialize(
+  await Supabase.initialize(
     url: const String.fromEnvironment('SUPABASE_URL'),
     publishableKey: const String.fromEnvironment('SUPABASE_KEY'),
   );
@@ -36,7 +37,7 @@ class BakeCraftApp extends StatelessWidget {
           create: (_) =>
               TranslationProvider(TranslationRepository(TranslationService())),
         ),
-                ChangeNotifierProvider(
+        ChangeNotifierProvider(
           create: (_) => SavedBakeProvider(
             SavedBakeRepository(SavedBakeService()),
           )..load(),
@@ -45,6 +46,9 @@ class BakeCraftApp extends StatelessWidget {
       child: MaterialApp(
         title: 'BakeCraft',
         debugShowCheckedModeBanner: false,
+        locale: const Locale('id'),
+        supportedLocales: const [Locale('id')],
+        localizationsDelegates: GlobalMaterialLocalizations.delegates,
         theme: ThemeData(
           useMaterial3: true,
           colorScheme:

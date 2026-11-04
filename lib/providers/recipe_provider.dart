@@ -13,6 +13,7 @@ class RecipeProvider extends ChangeNotifier {
   List<Recipe> _recipes = [];
   String? _errorMessage;
   String _keyword = '';
+  String _label = '';
 
   // Penanda pencarian terbaru, agar respons lama tidak menimpa yang baru.
   int _requestId = 0;
@@ -22,9 +23,13 @@ class RecipeProvider extends ChangeNotifier {
   String? get errorMessage => _errorMessage;
   String get keyword => _keyword;
 
-  Future<void> search(String keyword) async {
+  /// Teks yang ditampilkan ke pengguna (bisa berbeda dari kata kunci API).
+  String get label => _label;
+
+  Future<void> search(String keyword, {String? label}) async {
     final requestId = ++_requestId;
     _keyword = keyword.trim();
+    _label = label ?? _keyword;
     _status = LoadStatus.loading;
     _errorMessage = null;
     notifyListeners();
@@ -42,5 +47,5 @@ class RecipeProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-  Future<void> retry() => search(_keyword);
+  Future<void> retry() => search(_keyword, label: _label);
 }

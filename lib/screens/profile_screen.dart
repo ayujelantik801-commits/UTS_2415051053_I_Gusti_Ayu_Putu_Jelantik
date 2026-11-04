@@ -10,7 +10,7 @@ class ProfileScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Profile')),
+      appBar: AppBar(title: const Text('Profil')),
       body: ListView(
         padding: const EdgeInsets.all(24),
         children: [
@@ -34,6 +34,13 @@ class ProfileScreen extends StatelessWidget {
             leading: Icon(Icons.cake_outlined),
             title: Text('BakeCraft'),
             subtitle: Text('Aplikasi katalog dan koleksi resep baking'),
+          ),
+          const ListTile(
+            leading: Icon(Icons.info_outline),
+            title: Text('Sumber data'),
+            subtitle: Text(
+              'Resep: TheMealDB. Terjemahan: MyMemory. Koleksi: Supabase.',
+            ),
           ),
         ],
       ),

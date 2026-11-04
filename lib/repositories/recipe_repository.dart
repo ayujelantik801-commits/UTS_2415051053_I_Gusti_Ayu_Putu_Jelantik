@@ -1,4 +1,5 @@
 import '../models/recipe.dart';
+import '../services/keyword_translator.dart';
 import '../services/meal_api_service.dart';
 
 class RecipeRepository {
@@ -12,7 +13,9 @@ class RecipeRepository {
 
   Future<List<Recipe>> searchRecipes(String keyword) async {
     final k = keyword.trim();
-    if (k.isNotEmpty) return _service.searchMeals(k);
+    if (k.isNotEmpty) {
+      return _service.searchMeals(KeywordTranslator.toEnglish(k));
+    }
 
     // Katalog awal: gabungkan beberapa kata kunci baking.
     // Satu request yang gagal tidak membatalkan yang lain.

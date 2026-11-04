@@ -19,7 +19,7 @@ class _RecipeListScreenState extends State<RecipeListScreen> {
   void initState() {
     super.initState();
     _searchController =
-        TextEditingController(text: context.read<RecipeProvider>().keyword);
+        TextEditingController(text: context.read<RecipeProvider>().label);
   }
 
   @override
@@ -35,9 +35,8 @@ class _RecipeListScreenState extends State<RecipeListScreen> {
   @override
   Widget build(BuildContext context) {
     final provider = context.watch<RecipeProvider>();
-    final title = provider.keyword.isEmpty
-        ? 'Semua Resep'
-        : 'Resep: ${provider.keyword}';
+    final title =
+        provider.label.isEmpty ? 'Semua Resep' : 'Resep: ${provider.label}';
 
     return Scaffold(
       appBar: AppBar(title: Text(title)),
@@ -50,7 +49,7 @@ class _RecipeListScreenState extends State<RecipeListScreen> {
               textInputAction: TextInputAction.search,
               onSubmitted: _search,
               decoration: InputDecoration(
-                hintText: 'Cari resep kue...',
+                hintText: 'Cari resep, mis. cokelat, keju, pisang...',
                 prefixIcon: const Icon(Icons.search),
                 suffixIcon: IconButton(
                   tooltip: 'Hapus pencarian',
