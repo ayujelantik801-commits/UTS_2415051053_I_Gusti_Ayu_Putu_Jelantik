@@ -4,50 +4,35 @@ import '../constants.dart';
 import '../models/recipe.dart';
 import '../models/saved_bake.dart';
 import '../providers/saved_bake_provider.dart';
-import '../widgets/rating_input.dart';
-import '../widgets/recipe_image.dart';
+import '../widgets/bake_form.dart';
 
-class AddBakeScreen extends StatefulWidget {
+class AddBakeScreen extends StatelessWidget {
   final Recipe recipe;
 
   const AddBakeScreen({super.key, required this.recipe});
 
-  @override
-  State<AddBakeScreen> createState() => _AddBakeScreenState();
-}
-
-class _AddBakeScreenState extends State<AddBakeScreen> {
-  final _formKey = GlobalKey<FormState>();
-  final _noteController = TextEditingController();
-  int _rating = 0;
-  String _status = SavedBake.statusWantToTry;
-
-  @override
-  void dispose() {
-    _noteController.dispose();
-    super.dispose();
-  }
-
-  Future<void> _submit() async {
-    if (!_formKey.currentState!.validate()) return;
-    _formKey.currentState!.save();
-
+  Future<void> _save(
+    BuildContext context,
+    String note,
+    int rating,
+    String status,
+  ) async {
     final provider = context.read<SavedBakeProvider>();
     final messenger = ScaffoldMessenger.of(context);
     final navigator = Navigator.of(context);
+    final errorColor = Theme.of(context).colorScheme.error;
 
-    final bake = SavedBake(
-      studentId: studentId,
-      mealId: widget.recipe.id,
-      mealName: widget.recipe.name,
-      thumbnail: widget.recipe.thumbnail,
-      note: _noteController.text.trim(),
-      rating: _rating,
-      bakeStatus: _status,
+    final success = await provider.add(
+      SavedBake(
+        studentId: studentId,
+        mealId: recipe.id,
+        mealName: recipe.name,
+        thumbnail: recipe.thumbnail,
+        note: note,
+        rating: rating,
+        bakeStatus: status,
+      ),
     );
-
-    final success = await provider.add(bake);
-    if (!mounted) return;
 
     if (success) {
       navigator.pop();
@@ -58,7 +43,7 @@ class _AddBakeScreenState extends State<AddBakeScreen> {
       messenger.showSnackBar(
         SnackBar(
           content: Text(provider.actionError ?? 'Gagal menyimpan resep.'),
-          backgroundColor: Theme.of(context).colorScheme.error,
+          backgroundColor: errorColor,
         ),
       );
     }
@@ -67,101 +52,16 @@ class _AddBakeScreenState extends State<AddBakeScreen> {
   @override
   Widget build(BuildContext context) {
     final isSaving = context.watch<SavedBakeProvider>().isSaving;
-    final textTheme = Theme.of(context).textTheme;
 
     return Scaffold(
       appBar: AppBar(title: const Text('Simpan ke Koleksi')),
-      body: Center(
-        child: ConstrainedBox(
-          constraints: const BoxConstraints(maxWidth: 600),
-          child: SingleChildScrollView(
-            padding: const EdgeInsets.all(16),
-            child: Form(
-              key: _formKey,
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Row(
-                    children: [
-                      ClipRRect(
-                        borderRadius: BorderRadius.circular(8),
-                        child: SizedBox(
-                          width: 64,
-                          height: 64,
-                          child: RecipeImage(
-                            url: widget.recipe.thumbnail,
-                            height: 64,
-                          ),
-                        ),
-                      ),
-                      const SizedBox(width: 12),
-                      Expanded(
-                        child: Text(
-                          widget.recipe.name,
-                          style: textTheme.titleMedium,
-                        ),
-                      ),
-                    ],
-                  ),
-                  const SizedBox(height: 24),
-                  TextFormField(
-                    controller: _noteController,
-                    maxLines: 3,
-                    maxLength: 200,
-                    decoration: const InputDecoration(
-                      labelText: 'Catatan',
-                      hintText: 'Mis. kurangi gula, panggang 5 menit lebih lama',
-                      border: OutlineInputBorder(),
-                    ),
-                    validator: (value) {
-                      final text = value?.trim() ?? '';
-                      if (text.isEmpty) return 'Catatan wajib diisi.';
-                      if (text.length < 3) return 'Catatan minimal 3 karakter.';
-                      return null;
-                    },
-                  ),
-                  const SizedBox(height: 8),
-                  Text('Rating', style: textTheme.titleSmall),
-                  RatingInput(
-                    validator: (v) =>
-                        (v == null || v < 1) ? 'Pilih rating 1 sampai 5.' : null,
-                    onSaved: (v) => _rating = v ?? 0,
-                  ),
-                  const SizedBox(height: 16),
-                  DropdownButtonFormField<String>(
-                    value: _status,
-                    decoration: const InputDecoration(
-                      labelText: 'Status',
-                      border: OutlineInputBorder(),
-                    ),
-                    items: [
-                      for (final s in SavedBake.statusOptions)
-                        DropdownMenuItem(value: s, child: Text(s)),
-                    ],
-                    onChanged: (v) {
-                      if (v != null) setState(() => _status = v);
-                    },
-                  ),
-                  const SizedBox(height: 24),
-                  SizedBox(
-                    width: double.infinity,
-                    child: FilledButton.icon(
-                      onPressed: isSaving ? null : _submit,
-                      icon: isSaving
-                          ? const SizedBox(
-                              width: 18,
-                              height: 18,
-                              child: CircularProgressIndicator(strokeWidth: 2),
-                            )
-                          : const Icon(Icons.save_outlined),
-                      label: Text(isSaving ? 'Menyimpan...' : 'Simpan'),
-                    ),
-                  ),
-                ],
-              ),
-            ),
-          ),
-        ),
+      body: BakeForm(
+        mealName: recipe.name,
+        thumbnail: recipe.thumbnail,
+        submitLabel: 'Simpan',
+        isSaving: isSaving,
+        onSubmit: (note, rating, status) =>
+            _save(context, note, rating, status),
       ),
     );
   }
