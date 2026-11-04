@@ -66,7 +66,13 @@ class SavedBakeService {
   Future<T> _guard<T>(Future<T> Function() action) async {
     try {
       return await action().timeout(const Duration(seconds: 10));
+    } on ApiException {
+      rethrow;
     } on PostgrestException catch (e) {
+      // 23505 = pelanggaran aturan unik (resep yang sama tersimpan dua kali).
+      if (e.code == '23505') {
+        throw const ApiException('Resep ini sudah ada di Koleksi.');
+      }
       throw ApiException('Database bermasalah: ${e.message}');
     } on SocketException {
       throw const ApiException('Tidak ada koneksi internet.');
@@ -74,6 +80,8 @@ class SavedBakeService {
       throw const ApiException('Tidak ada koneksi internet.');
     } on TimeoutException {
       throw const ApiException('Koneksi terlalu lama. Coba lagi.');
+    } catch (_) {
+      throw const ApiException('Terjadi kesalahan tak terduga. Coba lagi.');
     }
   }
 }

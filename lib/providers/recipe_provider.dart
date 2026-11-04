@@ -14,21 +14,28 @@ class RecipeProvider extends ChangeNotifier {
   String? _errorMessage;
   String _keyword = '';
 
+  // Penanda pencarian terbaru, agar respons lama tidak menimpa yang baru.
+  int _requestId = 0;
+
   LoadStatus get status => _status;
   List<Recipe> get recipes => _recipes;
   String? get errorMessage => _errorMessage;
   String get keyword => _keyword;
 
   Future<void> search(String keyword) async {
+    final requestId = ++_requestId;
     _keyword = keyword.trim();
     _status = LoadStatus.loading;
     _errorMessage = null;
     notifyListeners();
 
     try {
-      _recipes = await _repository.searchRecipes(_keyword);
+      final result = await _repository.searchRecipes(_keyword);
+      if (requestId != _requestId) return; // ada pencarian yang lebih baru
+      _recipes = result;
       _status = LoadStatus.success;
     } catch (e) {
+      if (requestId != _requestId) return;
       _status = LoadStatus.error;
       _errorMessage = e.toString().replaceFirst('Exception: ', '');
     }

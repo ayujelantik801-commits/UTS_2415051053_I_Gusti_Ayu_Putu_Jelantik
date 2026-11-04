@@ -47,6 +47,8 @@ class MealApiService {
       throw const ApiException('Koneksi terlalu lama. Coba lagi.');
     } on FormatException {
       throw const ApiException('Format data dari server tidak valid.');
+    } on TypeError {
+      throw const ApiException('Data dari server tidak sesuai format.');
     }
   }
 }
