@@ -5,25 +5,12 @@ allprojects {
     }
 }
 
-rootProject.buildDir = '../build'
-
+rootProject.buildDir = "../build"
 subprojects {
     project.buildDir = "${rootProject.buildDir}/${project.name}"
 }
-
-// Perbaikan: isi compileSdkVersion untuk modul/plugin yang tidak mencantumkannya.
-// Blok ini harus berada SEBELUM evaluationDependsOn di bawah.
 subprojects {
-    afterEvaluate { project ->
-        if (project.hasProperty('android')
-                && project.android.compileSdkVersion == null) {
-            project.android.compileSdkVersion(34)
-        }
-    }
-}
-
-subprojects {
-    project.evaluationDependsOn(':app')
+    project.evaluationDependsOn(":app")
 }
 
 tasks.register("clean", Delete) {
